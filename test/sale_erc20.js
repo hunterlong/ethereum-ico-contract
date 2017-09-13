@@ -11,30 +11,11 @@ var tokenAddress;
 var Tokenint;
 
 
-contract('Token', function(accounts) {
+contract('Sale', function(accounts) {
 
   account_one = accounts[0];
   account_two = accounts[1];
   account_three = accounts[2];
-
-  tokenAddress = Token.address;
-  saleAddress = Sale.address;
-
-  it("should confirm the Sale address", function() {
-    return Token.deployed().then(function(instance) {
-      Tokenint = instance;
-      return instance.mintableAddress.call()
-    }).then(function(address) {
-      assert.equal(address, saleAddress, "Sale account is the same");
-    });
-  });
-
-
-});
-
-
-
-contract('Sale', function(accounts) {
 
   var cn;
 
@@ -58,9 +39,121 @@ contract('Sale', function(accounts) {
     return Sale.deployed().then(function(instance) {
       return instance.contribute({from: account_one, value: 20000000000})
     }).then(function(tx) {
-      console.log(tx.logs.event);
-      assert.equal(tx, "0xf04d145dd24e05e6ac9149302b62970769795fba", "Transfer ETH to confirmed");
+      assert.equal(tx.logs[0].event, "Contribution", "Transfer ETH to confirmed");
     })
   });
+
+
+  it("should have TOKENs in wallet", function() {
+    return Token.deployed().then(function(instance) {
+      Tokenint = instance;
+      return instance.balanceOf.call(account_one)
+    }).then(function(balance) {
+      assert.equal(balance.valueOf(), 12000000000000, "Purchaser has the new Tokens");
+    })
+  });
+
+
+  it("should transfer Tokens to someone else", function() {
+    return Token.deployed().then(function(instance) {
+      return instance.transfer(account_two, 100000000, {from: account_one})
+    }).then(function(tx) {
+      assert.equal(tx.logs[0].event, "Transfer", "Transfer Tokens confirmed");
+    })
+  });
+
+
+  it("second address has TOKENs in wallet", function() {
+    return Token.deployed().then(function(instance) {
+      return instance.balanceOf.call(account_two)
+    }).then(function(balance) {
+      assert.equal(balance.valueOf(), 100000000, "Second wallet has some Tokens");
+    })
+  });
+
+  it("should change TOKEN/ETH rate", function() {
+    return Sale.deployed().then(function(instance) {
+      return instance.updateRate(750, {from: account_one})
+    }).then(function() {
+      return cn.exchangeRate.call()
+    }).then(function(rate) {
+      assert.equal(rate, 750, "Rate was changed");
+    })
+  });
+
+
+  it("should change creator", function() {
+    return Sale.deployed().then(function(instance) {
+      cn = instance;
+      return instance.changeCreator(account_two, {from: account_one})
+    }).then(function() {
+      return cn.creator.call()
+    }).then(function(creator) {
+      assert.equal(creator.valueOf(), account_two, "Creator was changed");
+    })
+  });
+
+
+  it("should change Transfer status to OFF", function() {
+    return Sale.deployed().then(function(instance) {
+      return instance.changeTransferStats(false, {from: account_two})
+    }).then(function() {
+      return Tokenint.allowTransfer.call()
+    }).then(function(allow) {
+      assert.equal(allow, false, "Tokens cannot be transferred");
+    })
+  });
+
+
+  it("should change Transfer status to ON", function() {
+    return Sale.deployed().then(function(instance) {
+      return instance.changeTransferStats(true, {from: account_two})
+    }).then(function() {
+      return Tokenint.allowTransfer.call()
+    }).then(function(allow) {
+      assert.equal(allow, true, "Tokens can be transferred");
+    })
+  });
+
+
+  it("should turn off token sale", function() {
+    return Sale.deployed().then(function(instance) {
+      return instance.closeSale({from: account_two})
+    }).then(function() {
+      return cn.isFunding.call()
+    }).then(function(allow) {
+      assert.equal(allow, false, "Tokens Sale has ended");
+    })
+  });
+
+
+  it("should release held tokens to founders", function() {
+    return Sale.deployed().then(function(instance) {
+      return instance.releaseHeldCoins({from: account_one})
+    }).then(function() {
+      return Tokenint.balanceOf.call(account_one)
+    }).then(function(balance) {
+      assert.equal(balance.valueOf(), 11999900001000, "Tokens were released to founder");
+    })
+  });
+
+});
+
+
+contract('Token', function(accounts) {
+
+  tokenAddress = Token.address;
+  saleAddress = Sale.address;
+
+  it("should confirm the Sale address", function() {
+    return Token.deployed().then(function(instance) {
+      Tokenint = instance;
+      return instance.mintableAddress.call()
+    }).then(function(address) {
+      assert.equal(address, saleAddress, "Sale account is the same");
+    });
+  });
+
+
 
 });

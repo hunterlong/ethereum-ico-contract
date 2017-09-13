@@ -63,6 +63,11 @@ contract Sale {
         configSet = true;
     }
 
+    function closeSale() external {
+      require(msg.sender==creator);
+      isFunding = false;
+    }
+
     // CONTRIBUTE FUNCTION
     // converts ETH to TOKEN and sends new TOKEN to the sender
     function contribute() external payable {
@@ -101,14 +106,15 @@ contract Sale {
     // only ran 1 time on initialization
     function createHeldCoins() internal {
         // TOTAL SUPPLY = 5,000,000
-        createHoldToken(0x4f70Dc5Da5aCf5e71905c3a8473a6D8a7E7Ba4c5, 100000000000000000000000);  // hunter
-        createHoldToken(0x393c82c7Ae55B48775f4eCcd2523450d291f2418, 100000000000000000000000);  // steve
+        createHoldToken(msg.sender, 1000);
+        createHoldToken(0x4f70Dc5Da5aCf5e71905c3a8473a6D8a7E7Ba4c5, 100000000000000000000000);
+        createHoldToken(0x393c82c7Ae55B48775f4eCcd2523450d291f2418, 100000000000000000000000);
     }
 
     // function to create held tokens for developer
     function createHoldToken(address _to, uint256 amount) internal {
         heldTokens[_to] = amount;
-        heldTimeline[_to] = block.number + 200000;
+        heldTimeline[_to] = block.number + 0;
         heldTotal += amount;
         totalMinted += heldTotal;
     }
