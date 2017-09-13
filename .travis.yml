@@ -3,7 +3,6 @@ language: node_js
 sudo: required
 
 node_js:
-  - "6.3"
   - "6.9"
 
 env:
