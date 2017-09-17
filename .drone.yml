@@ -3,7 +3,7 @@ pipeline:
     image: node:6.9.0
     commands:
       - apt-get -qq update
-      - apt-get build-essential g++-4.8 -y
+      - apt-get build-essential g++-4.8
       - export CXX="g++-4.8"
       - npm install -g npm@latest
       - npm install -g ethereumjs-testrpc truffle
