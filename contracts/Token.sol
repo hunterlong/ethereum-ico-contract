@@ -1,11 +1,16 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.21;
 
 
 /*
 
-BASIC ERC20 Crowdsale ICO Token
+BASIC ERC20 Crowdsale ICO ERC20 Token
+
+Create this Token contract AFTER you already have the Sale contract created.
+
+   Token(address sale_address)   // creates token and links the Sale contract
 
 @author Hunter Long
+@repo https://github.com/hunterlong/ethereum-ico-contract
 
 */
 
@@ -73,13 +78,13 @@ contract Token is StandardToken {
     string public version = 'BASIC 0.1';
     address public mintableAddress;
 
-    function Token(address mintable) {
+    function Token(address sale_address) {
         balances[msg.sender] = 0;
         totalSupply = 0;
         name = name;
         decimals = decimals;
         symbol = symbol;
-        mintableAddress = mintable;
+        mintableAddress = sale_address;
         allowTransfer = true;
         createTokens();
     }

@@ -1,11 +1,16 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.21;
 
 /*
 
   BASIC ERC20 Sale Contract
 
+  Create this Sale contract first!
+
+     Sale(address ethwallet)   // this will send the received ETH funds to this address
+
 
   @author Hunter Long
+  @repo https://github.com/hunterlong/ethereum-ico-contract
 
 */
 
@@ -43,10 +48,10 @@ contract Sale {
     event Contribution(address from, uint256 amount);
     event ReleaseTokens(address from, uint256 amount);
 
-    function Sale() {
+    function Sale(address _wallet) {
         startBlock = block.number;
         maxMintable = 4000000000000000000000000; // 3 million max sellable (18 decimals)
-        ETHWallet = 0xF04d145dd24E05E6ac9149302B62970769795fBa;
+        ETHWallet = _wallet;
         isFunding = true;
         creator = msg.sender;
         createHeldCoins();
@@ -56,16 +61,20 @@ contract Sale {
     // setup function to be ran only 1 time
     // setup token address
     // setup end Block number
-    function setup(address TOKEN, uint endBlockTime) {
+    function setup(address token_address, uint end_block) {
         require(!configSet);
-        Token = ERC20(TOKEN);
-        endBlock = endBlockTime;
+        Token = ERC20(token_address);
+        endBlock = end_block;
         configSet = true;
     }
 
     function closeSale() external {
       require(msg.sender==creator);
       isFunding = false;
+    }
+
+    function () payable {
+        this.contribute();
     }
 
     // CONTRIBUTE FUNCTION
@@ -102,7 +111,7 @@ contract Sale {
         Token.changeTransfer(_allowed);
     }
 
-    // internal function that allocates a specific amount of ATYX at a specific block number.
+    // internal function that allocates a specific amount of TOKENS at a specific block number.
     // only ran 1 time on initialization
     function createHeldCoins() internal {
         // TOTAL SUPPLY = 5,000,000

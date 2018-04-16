@@ -1,0 +1,27 @@
+{
+  "name": "ethereum-ico-contract",
+  "version": "1.0.0",
+  "description": "This is a basic example of a crowdsale with a brand new ERC20 token. First deploy the Sale contract, and then the ERC20 token contract. The ERC20 contract will require the Sale Contract etheruem address.",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hunterlong/ethereum-ico-contract.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hunterlong/ethereum-ico-contract/issues"
+  },
+  "homepage": "https://github.com/hunterlong/ethereum-ico-contract#readme",
+  "dependencies": {
+    "ganache-cli": "^6.1.0",
+    "solc": "^0.4.21",
+    "truffle": "^4.1.5"
+  }
+}

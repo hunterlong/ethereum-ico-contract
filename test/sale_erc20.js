@@ -30,7 +30,7 @@ contract('Sale', function(accounts) {
     return Sale.deployed().then(function(instance) {
       return instance.ETHWallet.call()
     }).then(function(address) {
-      assert.equal(address, "0xf04d145dd24e05e6ac9149302b62970769795fba", "Transfer ETH to confirmed");
+      assert.equal(address, "0x004f3e7ffa2f06ea78e14ed2b13e87d710e8013f", "Transfer ETH to confirmed");
     });
   });
 
