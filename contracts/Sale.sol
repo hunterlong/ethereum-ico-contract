@@ -74,7 +74,16 @@ contract Sale {
     }
 
     function () payable {
-        this.contribute();
+        require(msg.value>0);
+        require(isFunding);
+        require(block.number <= endBlock);
+        uint256 amount = msg.value * exchangeRate;
+        uint256 total = totalMinted + amount;
+        require(total<=maxMintable);
+        totalMinted += total;
+        ETHWallet.transfer(msg.value);
+        Token.mintToken(msg.sender, amount);
+        Contribution(msg.sender, amount);
     }
 
     // CONTRIBUTE FUNCTION
@@ -118,6 +127,11 @@ contract Sale {
         createHoldToken(msg.sender, 1000);
         createHoldToken(0x4f70Dc5Da5aCf5e71905c3a8473a6D8a7E7Ba4c5, 100000000000000000000000);
         createHoldToken(0x393c82c7Ae55B48775f4eCcd2523450d291f2418, 100000000000000000000000);
+    }
+
+    // public function to get the amount of tokens held for an address
+    function getHeldCoin(address _address) public constant returns (uint256) {
+        return heldTokens[_address];
     }
 
     // function to create held tokens for developer

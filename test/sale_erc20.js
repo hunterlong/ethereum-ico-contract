@@ -44,7 +44,16 @@ contract('Sale', function(accounts) {
   });
 
 
-  it("should have TOKENs in wallet", function() {
+  it("should send some ETH without contribute function", function() {
+      return Sale.deployed().then(function(instance) {
+          return instance.sendTransaction({value: 100000000000, gasLimit: 100000, from: account_three});
+      }).then(function(tx) {
+          assert.equal(tx.logs[0].event, "Contribution", "Transfer ETH to confirmed");
+      })
+  });
+
+
+  it("should have TOKENs in wallet 1", function() {
     return Token.deployed().then(function(instance) {
       Tokenint = instance;
       return instance.balanceOf.call(account_one)
@@ -53,6 +62,14 @@ contract('Sale', function(accounts) {
     })
   });
 
+  it("should have TOKENs in wallet 3", function() {
+      return Token.deployed().then(function(instance) {
+          Tokenint = instance;
+          return instance.balanceOf.call(account_three)
+      }).then(function(balance) {
+          assert.equal(balance.valueOf(), 60000000000000, "Purchaser has the new Tokens");
+      })
+  });
 
   it("should transfer Tokens to someone else", function() {
     return Token.deployed().then(function(instance) {
@@ -124,6 +141,15 @@ contract('Sale', function(accounts) {
     }).then(function(allow) {
       assert.equal(allow, false, "Tokens Sale has ended");
     })
+  });
+
+
+  it("should return amount of tokens to be held", function() {
+      return Sale.deployed().then(function(instance) {
+          return instance.getHeldCoin(account_one)
+      }).then(function(held) {
+          assert.equal(held.valueOf(), 1000, "Tokens that are held for address");
+      })
   });
 
 
